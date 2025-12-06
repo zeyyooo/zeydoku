@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>ZEYDOKU 🌸</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #ffe6f2, #fff5fb);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #4a2b3c;
+    }
+
+    .app {
+      background: #ffffffdd;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 24px 28px 20px;
+      max-width: 520px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app::before {
+      content: "🌸";
+      position: absolute;
+      top: -18px;
+      right: 24px;
+      font-size: 28px;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #d14a8c;
+    }
+
+    /* Mascot (My Melody) */
+    .mascot {
+      position: absolute;
+      right: -10px;
+      top: 40px;
+      width: 120px;
+      opacity: 0.98;
+      pointer-events: none; /* tıklamayı engelle */
+    }
+
+    #sudoku-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    #sudoku-grid {
+      position: relative;
+    }
+
+    .cell {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border: 1px solid #f3c9dd;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .cell.selected {
+      background: #e6f2ff;
+      box-shadow: inset 0 0 0 2px #8ab4ff;
+    }
+
+    .cell.hint-area {
+      background: #fff2cc;
+    }
+
+    .cell.hint-main {
+      background: #ffcccc;
+      box-shadow: inset 0 0 0 2px #ff7f7f;
+    }
+
+    .cell.thick-right {
+      border-right: 2px solid #f099c4;
+    }
+
+    .cell.thick-bottom {
+      border-bottom: 2px solid #f099c4;
+    }
+
+    .main-value {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .main-value.given {
+      color: #5a3453;
+      font-weight: 700;
+    }
+
+    .main-value.user {
+      color: #2c6fd6;
+    }
+
+    .notes {
+      position: absolute;
+      inset: 3px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      font-size: 9px;
+      color: #999;
+      pointer-events: none;
+    }
+
+    .note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .controls {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 500;
+      background: #ffd6ea;
+      color: #8a3b6a;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .btn:hover {
+      background: #ffbedf;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-primary {
+      background: #ff9ac4;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #ff7fb4;
+    }
+
+    .btn-note-on {
+      background: #c1f0ff;
+      color: #12526a;
+    }
+
+    .btn-note-on:hover {
+      background: #a3e8ff;
+    }
+
+    .numbers-row {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .number-btn {
+      border-radius: 12px;
+      padding: 8px 0;
+      border: none;
+      background: #ffe4f2;
+      color: #8a3b6a;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .number-btn:hover {
+      background: #ffcfe8;
+      transform: translateY(-1px);
+    }
+
+    .difficulty-row {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .difficulty-label {
+      font-size: 13px;
+      color: #79435f;
+      margin-right: 4px;
+    }
+
+    .diff-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      background: #ffe8f5;
+      color: #8a3b6a;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .diff-btn.active {
+      background: #ff9ac4;
+      color: white;
+    }
+
+    .diff-btn:hover {
+      background: #ffd0ea;
+      transform: translateY(-1px);
+    }
+
+    .hint-info {
+      margin-top: 6px;
+      font-size: 11px;
+      text-align: center;
+      color: #94637b;
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        transform: scale(0.9);
+      }
+      .mascot {
+        width: 90px;
+        right: -5px;
+        top: 45px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="title">ZEYDOKU</div>
+    <!-- My Melody / mascot görseli -->
+    <img src="mascot.jpg" class="mascot" alt="ZEYDOKU mascot">
+
+    <div id="sudoku-container">
+      <div id="sudoku-grid"></div>
+    </div>
+
+    <div class="controls">
+      <button id="new-game" class="btn btn-primary">Yeni Oyun</button>
+      <button id="check" class="btn">Kontrol Et</button>
+      <button id="show-solution" class="btn">Çözümü Göster</button>
+      <button id="hint" class="btn">İpucu</button>
+
+      <button id="note-mode" class="btn">Not Modu: Kapalı</button>
+      <button id="clear-cell" class="btn">Sil</button>
+      <div class="hint-info" style="grid-column: span 2;">
+        Hücreye tıkla → alttan sayı seç. Not modunda aday yazabilirsin.
+      </div>
+    </div>
+
+    <div class="numbers-row" id="numbers-row"></div>
+
+    <div class="difficulty-row">
+      <span class="difficulty-label">Zorluk:</span>
+      <button class="diff-btn" data-diff="kolay">Kolay</button>
+      <button class="diff-btn active" data-diff="orta">Orta</button>
+      <button class="diff-btn" data-diff="zor">Zor</button>
+      <button class="diff-btn" data-diff="cok_zor">Çok Zor</button>
+    </div>
+
+    <div class="hint-info">
+      İpucu: Önce satır/sütun/kutu mantığı, sonra tek adaylı kareler. Notlarınla da sohbet eder 💬
+    </div>
+  </div>
+
+  <script>
+    const N = 9;
+    const CELL_SIZE = 50;
+    const MARGIN = 10;
+
+    let puzzle = null;
+    let solution = null;
+    let userGrid = null;
+    let candidates = null;
+    let selectedCell = null;
+    let noteMode = false;
+    let difficulty = "orta";
+    let hintCells = [];
+    let hintMain = null;
+
+    // ----- SUDOKU LOGIC -----
+    function findEmpty(grid) {
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          if (grid[r][c] === 0) return [r, c];
+        }
+      }
+      return null;
+    }
+
+    function isValid(grid, row, col, num) {
+      for (let c = 0; c < N; c++) {
+        if (grid[row][c] === num) return false;
+      }
+      for (let r = 0; r < N; r++) {
+        if (grid[r][col] === num) return false;
+      }
+      const br = Math.floor(row / 3) * 3;
+      const bc = Math.floor(col / 3) * 3;
+      for (let r = br; r < br + 3; r++) {
+        for (let c = bc; c < bc + 3; c++) {
+          if (grid[r][c] === num) return false;
+        }
+      }
+      return true;
+    }
+
+    function fillGrid(grid) {
+      const empty = findEmpty(grid);
+      if (!empty) return true;
+      const [r, c] = empty;
+      const nums = [1,2,3,4,5,6,7,8,9];
+      shuffle(nums);
+      for (const num of nums) {
+        if (isValid(grid, r, c, num)) {
+          grid[r][c] = num;
+          if (fillGrid(grid)) return true;
+          grid[r][c] = 0;
+        }
+      }
+      return false;
+    }
+
+    function countSolutions(grid, limit = 2) {
+      let solutions = 0;
+      function backtrack() {
+        if (solutions >= limit) return;
+        const empty = findEmpty(grid);
+        if (!empty) {
+          solutions += 1;
+          return;
+        }
+        const [r, c] = empty;
+        for (let num = 1; num <= 9; num++) {
+          if (isValid(grid, r, c, num)) {
+            grid[r][c] = num;
+            backtrack();
+            grid[r][c] = 0;
+            if (solutions >= limit) return;
+          }
+        }
+      }
+      backtrack();
+      return solutions;
+    }
+
+    function generatePuzzle(diff = "orta") {
+      const grid = Array.from({length: N}, () => Array(N).fill(0));
+      fillGrid(grid);
+      const solution = grid.map(row => row.slice());
+
+      const clueTargets = {
+        "kolay": 40,
+        "orta": 32,
+        "zor": 26,
+        "cok_zor": 22
+      };
+      const minClues = clueTargets[diff] ?? 32;
+
+      let clues = N * N;
+      const cells = [];
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) cells.push([r, c]);
+      }
+      shuffle(cells);
+
+      for (const [r, c] of cells) {
+        if (clues <= minClues) break;
+        const backup = grid[r][c];
+        grid[r][c] = 0;
+        const temp = grid.map(row => row.slice());
+        if (countSolutions(temp, 2) !== 1) {
+          grid[r][c] = backup;
+        } else {
+          clues -= 1;
+        }
+      }
+
+      return { puzzle: grid, solution };
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    // ----- INIT -----
+    document.addEventListener("DOMContentLoaded", () => {
+      const gridEl = document.getElementById("sudoku-grid");
+      gridEl.style.width = (CELL_SIZE * N + 2 * MARGIN) + "px";
+      gridEl.style.height = (CELL_SIZE * N + 2 * MARGIN) + "px";
+
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.style.left = (MARGIN + c * CELL_SIZE) + "px";
+          cell.style.top = (MARGIN + r * CELL_SIZE) + "px";
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+
+          if (c === 2 || c === 5) cell.classList.add("thick-right");
+          if (r === 2 || r === 5) cell.classList.add("thick-bottom");
+
+          cell.addEventListener("click", () => onCellClick(r, c));
+          gridEl.appendChild(cell);
+        }
+      }
+
+      const numsRow = document.getElementById("numbers-row");
+      for (let i = 1; i <= 9; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = "number-btn";
+        btn.addEventListener("click", () => numberPressed(i));
+        numsRow.appendChild(btn);
+      }
+
+      document.getElementById("new-game").addEventListener("click", newGame);
+      document.getElementById("check").addEventListener("click", checkSolution);
+      document.getElementById("show-solution").addEventListener("click", showSolution);
+      document.getElementById("hint").addEventListener("click", giveHint);
+      document.getElementById("clear-cell").addEventListener("click", clearCell);
+
+      const noteBtn = document.getElementById("note-mode");
+      noteBtn.addEventListener("click", () => {
+        noteMode = !noteMode;
+        noteBtn.textContent = "Not Modu: " + (noteMode ? "Açık" : "Kapalı");
+        if (noteMode) noteBtn.classList.add("btn-note-on");
+        else noteBtn.classList.remove("btn-note-on");
+      });
+
+      document.querySelectorAll(".diff-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          difficulty = btn.dataset.diff;
+          newGame();
+        });
+      });
+
+      newGame();
+    });
+
+    function newGame() {
+      const { puzzle: p, solution: s } = generatePuzzle(difficulty);
+      puzzle = p;
+      solution = s;
+      userGrid = puzzle.map(row => row.slice());
+      candidates = Array.from({length: N}, () => Array.from({length: N}, () => new Set()));
+      selectedCell = null;
+      hintCells = [];
+      hintMain = null;
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const cells = document.querySelectorAll(".cell");
+      cells.forEach(cell => {
+        const r = Number(cell.dataset.row);
+        const c = Number(cell.dataset.col);
+
+        cell.classList.remove("selected", "hint-area", "hint-main");
+        if (selectedCell && selectedCell.row === r && selectedCell.col === c) {
+          cell.classList.add("selected");
+        }
+        if (hintMain && hintMain.row === r && hintMain.col === c) {
+          cell.classList.add("hint-main");
+        } else if (hintCells.some(pos => pos.row === r && pos.col === c)) {
+          cell.classList.add("hint-area");
+        }
+
+        cell.innerHTML = "";
+        const val = puzzle[r][c];
+        const uval = userGrid[r][c];
+
+        if (val !== 0) {
+          const mv = document.createElement("div");
+          mv.className = "main-value given";
+          mv.textContent = val;
+          cell.appendChild(mv);
+        } else if (uval !== 0) {
+          const mv = document.createElement("div");
+          mv.className = "main-value user";
+          mv.textContent = uval;
+          cell.appendChild(mv);
+        } else if (candidates[r][c].size > 0) {
+          const notesDiv = document.createElement("div");
+          notesDiv.className = "notes";
+          for (let d = 1; d <= 9; d++) {
+            const span = document.createElement("div");
+            span.className = "note";
+            if (candidates[r][c].has(d)) span.textContent = d;
+            notesDiv.appendChild(span);
+          }
+          cell.appendChild(notesDiv);
+        }
+      });
+    }
+
+    function onCellClick(r, c) {
+      selectedCell = {row: r, col: c};
+      hintCells = [];
+      hintMain = null;
+      renderGrid();
+    }
+
+    function clearCell() {
+      if (!selectedCell) return;
+      const {row, col} = selectedCell;
+      if (puzzle[row][col] !== 0) return;
+
+      if (noteMode) {
+        candidates[row][col].clear();
+      } else {
+        userGrid[row][col] = 0;
+      }
+      hintCells = [];
+      hintMain = null;
+      renderGrid();
+    }
+
+    function numberPressed(d) {
+      if (!selectedCell) return;
+      const {row, col} = selectedCell;
+      if (puzzle[row][col] !== 0) return;
+
+      if (noteMode) {
+        if (userGrid[row][col] !== 0) return;
+        if (candidates[row][col].has(d)) {
+          candidates[row][col].delete(d);
+        } else {
+          candidates[row][col].add(d);
+        }
+      } else {
+        userGrid[row][col] = d;
+        candidates[row][col].clear();
+      }
+
+      hintCells = [];
+      hintMain = null;
+      renderGrid();
+    }
+
+    function checkSolution() {
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          if (userGrid[r][c] !== solution[r][c]) {
+            alert("Çözüm doğru değil, biraz daha dene 🙂");
+            return;
+          }
+        }
+      }
+      alert("Tebrikler! Sudokuyu çözdün 🎉");
+    }
+
+    function showSolution() {
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          userGrid[r][c] = solution[r][c];
+          candidates[r][c].clear();
+        }
+      }
+      hintCells = [];
+      hintMain = null;
+      renderGrid();
+    }
+
+    function computeLogicCandidates() {
+      const grid = userGrid.map(row => row.slice());
+      const cands = Array.from({length: N}, () => Array.from({length: N}, () => new Set()));
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          if (grid[r][c] === 0) {
+            for (let d = 1; d <= 9; d++) {
+              if (isValid(grid, r, c, d)) cands[r][c].add(d);
+            }
+          }
+        }
+      }
+      return cands;
+    }
+
+    function notesComment(r, c, d, scopeType) {
+      let msg = "";
+      const userNotes = candidates[r][c];
+
+      if (userNotes.size > 0) {
+        if (userNotes.has(d) && userNotes.size > 1) {
+          msg += `\nNotlarında ${d} zaten var, diğer adaylarını azaltmayı düşünebilirsin.`;
+        } else if (userNotes.has(d) && userNotes.size === 1) {
+          msg += `\nNotlarınla zaten ${d}’yi seçmişsin, artık bu kareyi doldurabilirsin.`;
+        } else if (!userNotes.has(d)) {
+          msg += `\nNot tutuyorsan, bu kareye ${d} adayını ekleyebilirsin.`;
+        }
+      } else {
+        msg += `\nBu karede hiç notun yoksa, ${d}’yi güçlü bir aday olarak düşünebilirsin.`;
+      }
+
+      if (scopeType === "row") {
+        const others = [];
+        for (let cc = 0; cc < N; cc++) {
+          if (candidates[r][cc].has(d) && cc !== c) others.push([r, cc]);
+        }
+        if (others.length > 0) {
+          msg += `\nBu satırdaki diğer karelere yazdığın ${d} notlarını silebilirsin.`;
+        }
+      } else if (scopeType === "col") {
+        const others = [];
+        for (let rr = 0; rr < N; rr++) {
+          if (candidates[rr][c].has(d) && rr !== r) others.push([rr, c]);
+        }
+        if (others.length > 0) {
+          msg += `\nBu sütundaki diğer karelerdeki ${d} notlarını da temizleyebilirsin.`;
+        }
+      } else if (scopeType === "box") {
+        const br = Math.floor(r / 3) * 3;
+        const bc = Math.floor(c / 3) * 3;
+        const others = [];
+        for (let rr = br; rr < br + 3; rr++) {
+          for (let cc = bc; cc < bc + 3; cc++) {
+            if (candidates[rr][cc].has(d) && (rr !== r || cc !== c)) {
+              others.push([rr, cc]);
+            }
+          }
+        }
+        if (others.length > 0) {
+          msg += `\nBu kutudaki diğer hücrelere yazdığın ${d} notlarını silebilirsin.`;
+        }
+      } else if (scopeType === "single") {
+        if (userNotes.size > 1 || userNotes.has(d)) {
+          msg += `\nBurada sadece ${d} geçerli olduğundan, diğer tüm notlarını güvenle silebilirsin.`;
+        }
+      }
+
+      return msg;
+    }
+
+    function giveHint() {
+      const cands = computeLogicCandidates();
+
+      // Row hidden single
+      for (let r = 0; r < N; r++) {
+        for (let d = 1; d <= 9; d++) {
+          const cells = [];
+          for (let c = 0; c < N; c++) {
+            if (cands[r][c].has(d)) cells.push({row: r, col: c});
+          }
+          if (cells.length === 1) {
+            const {row, col} = cells[0];
+            hintMain = {row, col};
+            hintCells = [];
+            for (let cc = 0; cc < N; cc++) hintCells.push({row: r, col: cc});
+            selectedCell = {row, col};
+            renderGrid();
+            const extra = notesComment(row, col, d, "row");
+            alert(`${r+1}. satıra odaklan.\nSayı ${d} bu satırda sadece seçili kareye sığıyor.` + extra);
+            return;
+          }
+        }
+      }
+
+      // Col hidden single
+      for (let c = 0; c < N; c++) {
+        for (let d = 1; d <= 9; d++) {
+          const cells = [];
+          for (let r = 0; r < N; r++) {
+            if (cands[r][c].has(d)) cells.push({row: r, col: c});
+          }
+          if (cells.length === 1) {
+            const {row, col} = cells[0];
+            hintMain = {row, col};
+            hintCells = [];
+            for (let rr = 0; rr < N; rr++) hintCells.push({row: rr, col: c});
+            selectedCell = {row, col};
+            renderGrid();
+            const extra = notesComment(row, col, d, "col");
+            alert(`${c+1}. sütuna bak.\nSayı ${d} bu sütunda sadece seçili hücrede mümkün.` + extra);
+            return;
+          }
+        }
+      }
+
+      // Box hidden single
+      for (let br = 0; br < N; br += 3) {
+        for (let bc = 0; bc < N; bc += 3) {
+          for (let d = 1; d <= 9; d++) {
+            const cells = [];
+            for (let r = br; r < br + 3; r++) {
+              for (let c = bc; c < bc + 3; c++) {
+                if (cands[r][c].has(d)) cells.push({row: r, col: c});
+              }
+            }
+            if (cells.length === 1) {
+              const {row, col} = cells[0];
+              hintMain = {row, col};
+              hintCells = [];
+              for (let r = br; r < br + 3; r++) {
+                for (let c = bc; c < bc + 3; c++) {
+                  hintCells.push({row: r, col: c});
+                }
+              }
+              selectedCell = {row, col};
+              renderGrid();
+              const extra = notesComment(row, col, d, "box");
+              alert(`Seçili hücrenin bulunduğu 3×3 kutuya bak.\nSayı ${d} bu kutuda sadece bu kareye sığıyor.` + extra);
+              return;
+            }
+          }
+        }
+      }
+
+      // Naked single
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          if (userGrid[r][c] === 0 && cands[r][c].size === 1) {
+            const d = [...cands[r][c]][0];
+            hintMain = {row: r, col: c};
+            hintCells = [];
+            selectedCell = {row: r, col: c};
+            renderGrid();
+            const extra = notesComment(r, c, d, "single");
+            alert(`Seçili kareye bak.\nSudoku kurallarına göre burada sadece ${d} mümkün.` + extra);
+            return;
+          }
+        }
+      }
+
+      alert("Basit mantıkla bulunabilecek yeni bir hamle kalmadı.\nBelki daha ileri teknikler gerekir 🙂");
+    }
+  </script>
+</body>
+</html>
