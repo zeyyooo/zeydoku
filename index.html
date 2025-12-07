@@ -17,91 +17,126 @@
       align-items: center;
       min-height: 100vh;
       color: #4a2b3c;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     .app {
       background: #ffffffdd;
       border-radius: 24px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      padding: 24px 28px 20px;
+      padding: 30px 28px 20px;
       max-width: 520px;
       width: 100%;
       position: relative;
       overflow: hidden;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
 
+    /* Köşedeki çiçek */
     .app::before {
-  content: "🌸";
-  position: absolute;
-  top: 8px;      /* -18 yerine 8 */
-  right: 16px;   /* biraz içeri aldık */
-  font-size: 22px;
-}
+      content: "🌸";
+      position: absolute;
+      top: 8px;
+      left: 16px;
+      font-size: 22px;
+    }
 
     .title {
       text-align: center;
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 4px;
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 6px;
       color: #d14a8c;
+      letter-spacing: 1px;
     }
 
-    /* Mascot (My Melody) */
-    .mascot {
-  position: absolute;
-  right: -140px;     /* SAĞA DIŞARI TAŞIYORUZ */
-  top: 120px;        /* Sudoku’nun ortası hizası */
-  width: 180px;      /* Daha büyük görünmesi için */
-  opacity: 0.95;
-  pointer-events: none;
-  z-index: -1;       /* Kutunun ARKASINA alır, taşma görünmez */
-}
-@media (max-width: 600px) {
-  .mascot {
-    right: -90px;
-    top: 180px;
-    width: 130px;
-  }
-}
+    /* Dark mode toggle butonu */
+    .theme-toggle {
+      position: absolute;
+      top: 10px;
+      right: 16px;
+      border: none;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      background: #ffd6ea;
+      color: #8a3b6a;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
 
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      background: #ffbedf;
+    }
 
+    /* Sudoku konteyneri */
     #sudoku-container {
       display: flex;
       justify-content: center;
-      margin-top: 10px;
+      margin-top: 14px;
     }
 
+    /* Tahta — Melody arkada */
     #sudoku-grid {
-  position: relative;
-  background-image: url("mascot.jpg");
-  background-size: 330px;       /* görüntü boyutu - büyült küçült */
-  background-repeat: no-repeat; 
-  background-position: center center;
-background-color: rgba(255, 240, 250, 0.7);
-  opacity: 0.18;                /* Görselin saydamlığı (0.10–0.25 arası tatlı oluyor) */
-}
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    #sudoku-grid::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("mascot.jpg");   /* dosya adı önemli */
+      background-repeat: no-repeat;
+      background-position: center 52%;
+      background-size: auto 105%;
+      opacity: 0.28;                          /* Melody görünürlüğü */
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Zorluk seçince parlayan efekt */
+    @keyframes gridGlow {
+      0%   { box-shadow: 0 0 0 rgba(255,153,196,0.0); transform: scale(1);   }
+      40%  { box-shadow: 0 0 18px rgba(255,153,196,0.9); transform: scale(1.01); }
+      100% { box-shadow: 0 0 0 rgba(255,153,196,0.0); transform: scale(1);   }
+    }
+    #sudoku-grid.diff-flash {
+      animation: gridGlow 0.6s ease-out;
+    }
 
     .cell {
       position: absolute;
       width: 50px;
       height: 50px;
       border: 1px solid #f3c9dd;
-      background: #fff;
+      background: transparent;
       cursor: pointer;
       transition: background 0.15s, box-shadow 0.15s;
+      z-index: 1;
     }
 
     .cell.selected {
-      background: #e6f2ff;
-      box-shadow: inset 0 0 0 2px #8ab4ff;
+      background: rgba(230, 242, 255, 0.9);
+      box-shadow:
+        0 0 8px rgba(138, 59, 106, 0.6),
+        inset 0 0 0 2px #8ab4ff;
     }
 
     .cell.hint-area {
-      background: #fff2cc;
+      background: #fff7d6;
     }
 
     .cell.hint-main {
-      background: #ffcccc;
+      background: #ffd9df;
       box-shadow: inset 0 0 0 2px #ff7f7f;
     }
 
@@ -264,23 +299,150 @@ background-color: rgba(255, 240, 250, 0.7);
       color: #94637b;
     }
 
+    /* KALP ATAN LOADING OVERLAY */
+    #loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 245, 252, 0.88);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 5;
+    }
+
+    #loading-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .heart-loader {
+      font-size: 48px;
+      animation: heartbeat 0.9s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%   { transform: scale(1); }
+      25%  { transform: scale(1.25); }
+      50%  { transform: scale(1); }
+      75%  { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+
+    /* DARK MODE --------------------------------------------------- */
+    body.dark {
+      background: radial-gradient(circle at top, #2b1224, #05020a 60%);
+      color: #fbeaff;
+    }
+
+    body.dark .app {
+      background: #1c1020f0;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+
+    body.dark .title {
+      color: #ff9ad9;
+    }
+
+    body.dark .theme-toggle {
+      background: #3b2438;
+      color: #ffd6f3;
+    }
+
+    body.dark .btn {
+      background: #3b2438;
+      color: #ffd6f3;
+    }
+
+    body.dark .btn:hover {
+      background: #4a2d46;
+    }
+
+    body.dark .btn-primary {
+      background: #ff5fa8;
+      color: #fff;
+    }
+
+    body.dark .btn-primary:hover {
+      background: #ff3f97;
+    }
+
+    body.dark .number-btn {
+      background: #3b2438;
+      color: #ffd6f3;
+    }
+
+    body.dark .number-btn:hover {
+      background: #4a2d46;
+    }
+
+    body.dark .diff-btn {
+      background: #3b2438;
+      color: #ffd6f3;
+    }
+
+    body.dark .diff-btn.active {
+      background: #ff5fa8;
+      color: #fff;
+    }
+
+    body.dark .difficulty-label,
+    body.dark .hint-info {
+      color: #f1c7ec;
+    }
+body.dark .cell.selected {
+  background: rgba(255, 96, 160, 0.38);
+  box-shadow: 0 0 14px rgba(255, 100, 170, 0.75);
+  border-color: #ff74c7 !important;
+}
+/* LIGHT MODE seçili hücre */
+body:not(.dark) .cell.selected {
+  background: rgba(255, 182, 222, 0.45); /* tatlı açık pembe */
+  border-color: #ff8ac7 !important;
+  box-shadow: 0 0 8px rgba(255, 140, 200, 0.6);
+}
+.cell {
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.cell.selected {
+  transform: scale(1.05);
+}
+
+
+    body.dark .cell {
+      border-color: #ff9ad9;
+    }
+
+    body.dark .main-value.given {
+      color: #ffe6ff;
+    }
+
+    body.dark .main-value.user {
+      color: #9bc4ff;
+    }
+
+    body.dark #sudoku-grid::before {
+      opacity: 0.35;
+    }
+
+    body.dark #loading-overlay {
+      background: rgba(10, 3, 18, 0.85);
+    }
+
     @media (max-width: 600px) {
       .app {
         transform: scale(0.9);
-      }
-      .mascot {
-        width: 90px;
-        right: -5px;
-        top: 45px;
       }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="title">ZEYDOKU</div>
-    <!-- My Melody / mascot görseli -->
-    <img src="mascot.jpg" class="mascot" alt="ZEYDOKU mascot">
+    <div class="title">💗ZEYDOKU💗</div>
+    <button id="theme-toggle" class="theme-toggle">🌙 Dark</button>
 
     <div id="sudoku-container">
       <div id="sudoku-grid"></div>
@@ -310,7 +472,12 @@ background-color: rgba(255, 240, 250, 0.7);
     </div>
 
     <div class="hint-info">
-     
+    
+    </div>
+
+    <!-- Kalp atan loading -->
+    <div id="loading-overlay">
+      <div class="heart-loader">💗</div>
     </div>
   </div>
 
@@ -329,7 +496,9 @@ background-color: rgba(255, 240, 250, 0.7);
     let hintCells = [];
     let hintMain = null;
 
-    // ----- SUDOKU LOGIC -----
+    let loadingOverlay = null;
+    let gridEl = null;
+
     function findEmpty(grid) {
       for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
@@ -437,9 +606,25 @@ background-color: rgba(255, 240, 250, 0.7);
       }
     }
 
-    // ----- INIT -----
+    function showLoading() {
+      if (loadingOverlay) loadingOverlay.classList.add("visible");
+    }
+    function hideLoading() {
+      if (loadingOverlay) loadingOverlay.classList.remove("visible");
+    }
+
+    function flashDifficulty() {
+      if (!gridEl) return;
+      gridEl.classList.remove("diff-flash");
+      // reflow hilesi
+      void gridEl.offsetWidth;
+      gridEl.classList.add("diff-flash");
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
-      const gridEl = document.getElementById("sudoku-grid");
+      gridEl = document.getElementById("sudoku-grid");
+      loadingOverlay = document.getElementById("loading-overlay");
+
       gridEl.style.width = (CELL_SIZE * N + 2 * MARGIN) + "px";
       gridEl.style.height = (CELL_SIZE * N + 2 * MARGIN) + "px";
 
@@ -469,7 +654,10 @@ background-color: rgba(255, 240, 250, 0.7);
         numsRow.appendChild(btn);
       }
 
-      document.getElementById("new-game").addEventListener("click", newGame);
+      document.getElementById("new-game").addEventListener("click", () => {
+        flashDifficulty();
+        newGame();
+      });
       document.getElementById("check").addEventListener("click", checkSolution);
       document.getElementById("show-solution").addEventListener("click", showSolution);
       document.getElementById("hint").addEventListener("click", giveHint);
@@ -488,23 +676,38 @@ background-color: rgba(255, 240, 250, 0.7);
           document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
           btn.classList.add("active");
           difficulty = btn.dataset.diff;
+          flashDifficulty();
           newGame();
         });
+      });
+
+      const themeToggle = document.getElementById("theme-toggle");
+      themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        if (document.body.classList.contains("dark")) {
+          themeToggle.textContent = "☀️ Light";
+        } else {
+          themeToggle.textContent = "🌙 Dark";
+        }
       });
 
       newGame();
     });
 
     function newGame() {
-      const { puzzle: p, solution: s } = generatePuzzle(difficulty);
-      puzzle = p;
-      solution = s;
-      userGrid = puzzle.map(row => row.slice());
-      candidates = Array.from({length: N}, () => Array.from({length: N}, () => new Set()));
-      selectedCell = null;
-      hintCells = [];
-      hintMain = null;
-      renderGrid();
+      showLoading();
+      setTimeout(() => {
+        const { puzzle: p, solution: s } = generatePuzzle(difficulty);
+        puzzle = p;
+        solution = s;
+        userGrid = puzzle.map(row => row.slice());
+        candidates = Array.from({length: N}, () => Array.from({length: N}, () => new Set()));
+        selectedCell = null;
+        hintCells = [];
+        hintMain = null;
+        renderGrid();
+        hideLoading();
+      }, 60);
     }
 
     function renderGrid() {
@@ -512,8 +715,8 @@ background-color: rgba(255, 240, 250, 0.7);
       cells.forEach(cell => {
         const r = Number(cell.dataset.row);
         const c = Number(cell.dataset.col);
-
         cell.classList.remove("selected", "hint-area", "hint-main");
+
         if (selectedCell && selectedCell.row === r && selectedCell.col === c) {
           cell.classList.add("selected");
         }
@@ -692,7 +895,6 @@ background-color: rgba(255, 240, 250, 0.7);
     function giveHint() {
       const cands = computeLogicCandidates();
 
-      // Row hidden single
       for (let r = 0; r < N; r++) {
         for (let d = 1; d <= 9; d++) {
           const cells = [];
@@ -713,7 +915,6 @@ background-color: rgba(255, 240, 250, 0.7);
         }
       }
 
-      // Col hidden single
       for (let c = 0; c < N; c++) {
         for (let d = 1; d <= 9; d++) {
           const cells = [];
@@ -734,7 +935,6 @@ background-color: rgba(255, 240, 250, 0.7);
         }
       }
 
-      // Box hidden single
       for (let br = 0; br < N; br += 3) {
         for (let bc = 0; bc < N; bc += 3) {
           for (let d = 1; d <= 9; d++) {
@@ -763,7 +963,6 @@ background-color: rgba(255, 240, 250, 0.7);
         }
       }
 
-      // Naked single
       for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
           if (userGrid[r][c] === 0 && cands[r][c].size === 1) {
