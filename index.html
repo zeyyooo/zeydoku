@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" href="apple-touch-icon.png">
-
   <meta charset="UTF-8" />
   <title>ZEYDOKU 🌸</title>
 
@@ -11,6 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png">
 
   <style>
     * {
@@ -50,7 +49,7 @@
       font-size: 20px;
     }
 
-    /* Başlık satırı TAM ortaya gelsin */
+    /* Başlık satırı ortalı */
     .top-row {
       display: flex;
       align-items: center;
@@ -59,7 +58,7 @@
     }
     .top-row > :first-child,
     .top-right {
-      width: 70px; /* sol boşluk ve sağdaki buton alanı eşit genişlikte */
+      width: 70px;
     }
     .top-right {
       display: flex;
@@ -83,6 +82,13 @@
       margin-top: 2px;
     }
 
+    .mistake-info {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 2px;
+      color: #b1526e;
+    }
+
     .small-toggle {
       border: none;
       border-radius: 999px;
@@ -100,19 +106,17 @@
       background: #ffbedf;
     }
 
-    /* Sudoku container */
     #sudoku-container {
       display: flex;
       justify-content: center;
       margin-top: 6px;
     }
 
-    /* Grid: responsive kare */
     #sudoku-grid {
       position: relative;
       width: 100%;
       max-width: 360px;
-      aspect-ratio: 1 / 1;      /* her zaman kare */
+      aspect-ratio: 1 / 1;
       margin: 0 auto;
       display: grid;
       grid-template-columns: repeat(9, 1fr);
@@ -121,12 +125,11 @@
       overflow: hidden;
     }
 
-    /* Melody arkaplanı – eski daha tatlı konum */
     #sudoku-grid::before {
       content: "";
       position: absolute;
       inset: 0;
-      background-image: url("mascot.png");  /* dosya adın farklıysa burayı değiştir */
+      background-image: url("mascot.png"); /* Melody PNG */
       background-repeat: no-repeat;
       background-position: center 55%;
       background-size: auto 110%;
@@ -135,7 +138,6 @@
       z-index: 0;
     }
 
-    /* zorluk değişince grid parlasın */
     @keyframes gridGlow {
       0%   { box-shadow: 0 0 0 rgba(255,153,196,0.0); transform: scale(1); }
       40%  { box-shadow: 0 0 18px rgba(255,153,196,0.9); transform: scale(1.01); }
@@ -144,8 +146,6 @@
     #sudoku-grid.diff-flash {
       animation: gridGlow 0.6s ease-out;
     }
-
-    /* HÜCRELER */
 
     .cell {
       position: relative;
@@ -156,31 +156,26 @@
       cursor: pointer;
       transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
       z-index: 1;
-      /* İnce çizgi – daha soft pembe */
-       box-shadow: inset 0 0 0 1px #f7b9dd;
+      box-shadow: inset 0 0 0 1px #f7b9dd; /* ince ama belirgin */
     }
 
-    /* 3x3 kalın çizgiler – daha belirgin */
     .cell.thick-right {
-  box-shadow:
-    inset 0 0 0 1px #f7b9dd,
-    inset -3px 0 0 0 #ff4fa8;  /* hala koyu ama biraz daha dengeli */
-}
-.cell.thick-bottom {
-  box-shadow:
-    inset 0 0 0 1px #f7b9dd,
-    inset 0 -3px 0 0 #ff4fa8;
-}
-.cell.thick-right.thick-bottom {
-  box-shadow:
-    inset 0 0 0 1px #f7b9dd,
-    inset -3px 0 0 0 #ff4fa8,
-    inset 0 -3px 0 0 #ff4fa8;
-}
+      box-shadow:
+        inset 0 0 0 1px #f7b9dd,
+        inset -3px 0 0 0 #ff4fa8;
+    }
+    .cell.thick-bottom {
+      box-shadow:
+        inset 0 0 0 1px #f7b9dd,
+        inset 0 -3px 0 0 #ff4fa8;
+    }
+    .cell.thick-right.thick-bottom {
+      box-shadow:
+        inset 0 0 0 1px #f7b9dd,
+        inset -3px 0 0 0 #ff4fa8,
+        inset 0 -3px 0 0 #ff4fa8;
+    }
 
-
-
-    /* Seçili hücre – light mod */
     body:not(.dark) .cell.selected {
       background: rgba(255, 182, 222, 0.45);
       box-shadow: inset 0 0 0 1px #ff8ac7, 0 0 8px rgba(255, 140, 200, 0.6);
@@ -194,6 +189,16 @@
       background: #ffd9df;
       box-shadow: inset 0 0 0 2px #ff7f7f;
     }
+/* Dark modda ipucu çok parlamasın ama belli olsun */
+body.dark .cell.hint-area {
+  background: rgba(255, 255, 200, 0.12);
+}
+
+body.dark .cell.hint-main {
+  background: rgba(255, 160, 220, 0.28);
+  box-shadow: inset 0 0 0 2px #ff9ad9;
+}
+
 
     .main-value {
       position: relative;
@@ -206,7 +211,6 @@
       font-weight: 700;
     }
 
-    /* Kullanıcının yazdığı sayılar – daha açık pembe */
     .main-value.user {
       color: #ff6fb3;
     }
@@ -226,8 +230,6 @@
       align-items: center;
       justify-content: center;
     }
-
-    /* BUTONLAR */
 
     .controls {
       margin-top: 14px;
@@ -265,13 +267,15 @@
       background: #ff7fb4;
     }
 
-    .btn-note-on {
-      background: #c1f0ff;
-      color: #12526a;
-    }
-    .btn-note-on:hover {
-      background: #a3e8ff;
-    }
+    /* Not modu AÇIKKEN buton rengi */
+.btn-note-on {
+  background: #f4c8ff;      /* lila-pembe */
+  color: #5a245f;           /* koyu mor yazı */
+}
+.btn-note-on:hover {
+  background: #f0b0ff;      /* hover'da bir tık koyu */
+}
+
 
     .numbers-row {
       margin-top: 10px;
@@ -333,7 +337,6 @@
       color: #94637b;
     }
 
-    /* Loading kalp */
     #loading-overlay {
       position: absolute;
       inset: 0;
@@ -360,6 +363,34 @@
       50%  { transform: scale(1); }
       75%  { transform: scale(1.25); }
       100% { transform: scale(1); }
+    }
+
+    /* Aynı sayı vurgusu */
+    .cell.same-number {
+      background: rgba(255, 105, 180, 0.22);
+      box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+    }
+    body.dark .cell.same-number {
+      background: rgba(255, 105, 180, 0.32);
+      box-shadow: 0 0 14px rgba(255, 105, 180, 0.85);
+    }
+
+    /* Hatalı giriş efekti */
+    .cell.invalid {
+      background: rgba(255, 60, 90, 0.35) !important;
+      box-shadow: 0 0 14px rgba(255, 60, 90, 0.9) !important;
+      animation: shake 0.15s ease-in-out 2;
+    }
+    .cell.invalid .main-value {
+      color: #ff1f5a !important;
+      font-weight: 800;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      50% { transform: translateX(2px); }
+      75% { transform: translateX(-2px); }
+      100% { transform: translateX(0); }
     }
 
     /* DARK MODE --------------------------------------------------- */
@@ -417,38 +448,35 @@
 
     body.dark .difficulty-label,
     body.dark .hint-info,
-    body.dark .timer {
+    body.dark .timer,
+    body.dark .mistake-info {
       color: #f1c7ec;
     }
 
-    /* Dark mod çizgiler – 3x3 daha belirgin */
-   body.dark .cell {
-  box-shadow: inset 0 0 0 0.5px rgba(255, 179, 227, 0.8);
-}
-
-body.dark .cell.thick-right {
-  box-shadow:
-    inset 0 0 0 0.5px rgba(255, 179, 227, 0.8),
-    inset -4px 0 0 0 #ff2c96;   /* ekstra koyu/kalın */
-}
-body.dark .cell.thick-bottom {
-  box-shadow:
-    inset 0 0 0 0.5px rgba(255, 179, 227, 0.8),
-    inset 0 -4px 0 0 #ff2c96;
-}
-body.dark .cell.thick-right.thick-bottom {
-  box-shadow:
-    inset 0 0 0 0.5px rgba(255, 179, 227, 0.8),
-    inset -4px 0 0 0 #ff2c96,
-    inset 0 -4px 0 0 #ff2c96;
-}
-
+    body.dark .cell {
+      box-shadow: inset 0 0 0 0.5px rgba(255, 179, 227, 0.8);
+    }
+    body.dark .cell.thick-right {
+      box-shadow:
+        inset 0 0 0 0.5px rgba(255, 179, 227, 0.8),
+        inset -4px 0 0 0 #ff2c96;
+    }
+    body.dark .cell.thick-bottom {
+      box-shadow:
+        inset 0 0 0 0.5px rgba(255, 179, 227, 0.8),
+        inset 0 -4px 0 0 #ff2c96;
+    }
+    body.dark .cell.thick-right.thick-bottom {
+      box-shadow:
+        inset 0 0 0 0.5px rgba(255, 179, 227, 0.8),
+        inset -4px 0 0 0 #ff2c96,
+        inset 0 -4px 0 0 #ff2c96;
+    }
 
     body.dark .main-value.given {
       color: #ffe6ff;
     }
 
-    /* Dark modda kullanıcı sayıları – daha açık, glowlu pembe */
     body.dark .main-value.user {
       color: #ff8ccd;
       font-weight: 700;
@@ -499,6 +527,7 @@ body.dark .cell.thick-right.thick-bottom {
       </div>
     </div>
     <div class="timer" id="timer">⏱️ 00:00</div>
+    <div class="mistake-info" id="mistake-info">Hata: 0/5</div>
 
     <div id="sudoku-container">
       <div id="sudoku-grid"></div>
@@ -532,13 +561,16 @@ body.dark .cell.thick-right.thick-bottom {
 
   <script>
     const N = 9;
-    const STORAGE_KEY = "zeydoku_state_v2";
+    const STORAGE_KEY = "zeydoku_state_v3";
+    const MAX_MISTAKES = 5;
 
     let puzzle = null;
     let solution = null;
     let userGrid = null;
     let candidates = null;
+    let fixedByUser = null;   // doğru doldurulan ve kilitlenen hücreler
     let selectedCell = null;
+    let selectedValue = null;
     let noteMode = false;
     let difficulty = "orta";
     let hintCells = [];
@@ -548,9 +580,11 @@ body.dark .cell.thick-right.thick-bottom {
     let gridEl = null;
     let themeToggle = null;
     let timerEl = null;
+    let mistakeInfoEl = null;
 
     let timerInterval = null;
     let elapsedSeconds = 0;
+    let mistakeCount = 0;
 
     function findEmpty(grid) {
       for (let r = 0; r < N; r++) {
@@ -616,6 +650,35 @@ body.dark .cell.thick-right.thick-bottom {
       backtrack();
       return solutions;
     }
+
+// Bir hücreye d sayısını yerleştirdikten sonra,
+// aynı satır, sütun ve 3x3 kutudaki notlardan d'yi sil
+function updateNotesAfterNumber(row, col, d) {
+  if (!candidates) return;
+
+  // satır
+  for (let c = 0; c < N; c++) {
+    if (c === col) continue;
+    candidates[row][c].delete(d);
+  }
+
+  // sütun
+  for (let r = 0; r < N; r++) {
+    if (r === row) continue;
+    candidates[r][col].delete(d);
+  }
+
+  // 3x3 kutu
+  const br = Math.floor(row / 3) * 3;
+  const bc = Math.floor(col / 3) * 3;
+  for (let r = br; r < br + 3; r++) {
+    for (let c = bc; c < bc + 3; c++) {
+      if (r === row && c === col) continue;
+      candidates[r][c].delete(d);
+    }
+  }
+}
+
 
     function generatePuzzle(diff = "orta") {
       const grid = Array.from({length: N}, () => Array(N).fill(0));
@@ -704,16 +767,23 @@ body.dark .cell.thick-right.thick-bottom {
       return data.map(row => row.map(arr => new Set(arr)));
     }
 
+    function updateMistakeInfo() {
+      if (!mistakeInfoEl) return;
+      mistakeInfoEl.textContent = `Hata: ${mistakeCount}/${MAX_MISTAKES}`;
+    }
+
     function saveState() {
-      if (!puzzle || !solution || !userGrid || !candidates) return;
+      if (!puzzle || !solution || !userGrid || !candidates || !fixedByUser) return;
       const state = {
         puzzle,
         solution,
         userGrid,
         candidates: serializeCandidates(candidates),
+        fixedByUser,
         difficulty,
         isDark: document.body.classList.contains("dark"),
-        elapsedSeconds
+        elapsedSeconds,
+        mistakeCount
       };
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -738,8 +808,11 @@ body.dark .cell.thick-right.thick-bottom {
         solution = state.solution;
         userGrid = state.userGrid;
         candidates = deserializeCandidates(state.candidates || []);
+        fixedByUser = state.fixedByUser ||
+          Array.from({length: N}, () => Array(N).fill(false));
         difficulty = state.difficulty || "orta";
         elapsedSeconds = state.elapsedSeconds || 0;
+        mistakeCount = state.mistakeCount || 0;
 
         if (state.isDark) {
           document.body.classList.add("dark");
@@ -755,10 +828,12 @@ body.dark .cell.thick-right.thick-bottom {
         });
 
         selectedCell = null;
+        selectedValue = null;
         hintCells = [];
         hintMain = null;
-        renderGrid();
         updateTimerDisplay();
+        updateMistakeInfo();
+        renderGrid();
         startTimer();
       } catch (e) {
         console.warn("State okunamadı, yeni oyun:", e);
@@ -771,8 +846,8 @@ body.dark .cell.thick-right.thick-bottom {
       loadingOverlay = document.getElementById("loading-overlay");
       themeToggle = document.getElementById("theme-toggle");
       timerEl = document.getElementById("timer");
+      mistakeInfoEl = document.getElementById("mistake-info");
 
-      // Hücreleri oluştur
       gridEl.innerHTML = "";
       for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
@@ -800,9 +875,18 @@ body.dark .cell.thick-right.thick-bottom {
       }
 
       document.getElementById("new-game").addEventListener("click", () => {
-        flashDifficulty();
-        newGame(false);
-      });
+  const ok = confirm("Yeni oyuna başlamak istediğine emin misin? Mevcut ilerlemen silinecek.");
+  if (!ok) return;
+  flashDifficulty();
+  newGame(false);
+});
+
+document.getElementById("show-solution").addEventListener("click", () => {
+  const ok = confirm("Çözümü göstermek istediğine emin misin? Bulmaca tamamen doldurulacak.");
+  if (!ok) return;
+  showSolution();
+});
+
       document.getElementById("check").addEventListener("click", checkSolution);
       document.getElementById("show-solution").addEventListener("click", showSolution);
       document.getElementById("hint").addEventListener("click", giveHint);
@@ -843,7 +927,9 @@ body.dark .cell.thick-right.thick-bottom {
       showLoading();
       stopTimer();
       elapsedSeconds = 0;
+      mistakeCount = 0;
       updateTimerDisplay();
+      updateMistakeInfo();
 
       setTimeout(() => {
         const { puzzle: p, solution: s } = generatePuzzle(difficulty);
@@ -854,7 +940,12 @@ body.dark .cell.thick-right.thick-bottom {
           {length: N},
           () => Array.from({length: N}, () => new Set())
         );
+        fixedByUser = Array.from(
+          {length: N},
+          () => Array(N).fill(false)
+        );
         selectedCell = null;
+        selectedValue = null;
         hintCells = [];
         hintMain = null;
         renderGrid();
@@ -864,12 +955,17 @@ body.dark .cell.thick-right.thick-bottom {
       }, isInitial ? 0 : 80);
     }
 
+    function getCellElement(row, col) {
+      return document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    }
+
     function renderGrid() {
       const cells = document.querySelectorAll(".cell");
       cells.forEach(cell => {
         const r = Number(cell.dataset.row);
         const c = Number(cell.dataset.col);
-        cell.classList.remove("selected", "hint-area", "hint-main");
+        cell.classList.remove("selected", "hint-area", "hint-main", "same-number");
+        // invalid class'i burada silmiyoruz, yanlışsa kırmızı kalsın
 
         if (selectedCell && selectedCell.row === r && selectedCell.col === c) {
           cell.classList.add("selected");
@@ -884,15 +980,19 @@ body.dark .cell.thick-right.thick-bottom {
         const val = puzzle[r][c];
         const uval = userGrid[r][c];
 
+        let displayVal = 0;
+
         if (val !== 0) {
           const mv = document.createElement("div");
           mv.className = "main-value given";
           mv.textContent = val;
+          displayVal = val;
           cell.appendChild(mv);
         } else if (uval !== 0) {
           const mv = document.createElement("div");
           mv.className = "main-value user";
           mv.textContent = uval;
+          displayVal = uval;
           cell.appendChild(mv);
         } else if (candidates && candidates[r][c].size > 0) {
           const notesDiv = document.createElement("div");
@@ -905,11 +1005,17 @@ body.dark .cell.thick-right.thick-bottom {
           }
           cell.appendChild(notesDiv);
         }
+
+        if (selectedValue && displayVal === selectedValue) {
+          cell.classList.add("same-number");
+        }
       });
     }
 
     function onCellClick(r, c) {
       selectedCell = {row: r, col: c};
+      const v = puzzle[r][c] || userGrid[r][c] || null;
+      selectedValue = v;
       hintCells = [];
       hintMain = null;
       renderGrid();
@@ -918,41 +1024,86 @@ body.dark .cell.thick-right.thick-bottom {
     function clearCell() {
       if (!selectedCell) return;
       const {row, col} = selectedCell;
-      if (puzzle[row][col] !== 0) return;
+      if (puzzle[row][col] !== 0 || fixedByUser[row][col]) return; // verilen veya doğru olanı silme
 
       if (noteMode) {
         candidates[row][col].clear();
       } else {
         userGrid[row][col] = 0;
+        const cellEl = getCellElement(row, col);
+        if (cellEl) cellEl.classList.remove("invalid");
       }
       hintCells = [];
       hintMain = null;
+
+      const v = puzzle[row][col] || userGrid[row][col] || null;
+      selectedValue = v;
       renderGrid();
       saveState();
     }
 
     function numberPressed(d) {
-      if (!selectedCell) return;
-      const {row, col} = selectedCell;
-      if (puzzle[row][col] !== 0) return;
+  if (!selectedCell) return;
+  const {row, col} = selectedCell;
 
-      if (noteMode) {
-        if (userGrid[row][col] !== 0) return;
-        if (candidates[row][col].has(d)) {
-          candidates[row][col].delete(d);
-        } else {
-          candidates[row][col].add(d);
-        }
-      } else {
-        userGrid[row][col] = d;
-        candidates[row][col].clear();
-      }
+  // Başlangıç sayıları veya daha önce doğru doldurulmuş hücreler değişmesin
+  if (puzzle[row][col] !== 0 || fixedByUser[row][col]) return;
 
-      hintCells = [];
-      hintMain = null;
-      renderGrid();
-      saveState();
+  if (noteMode) {
+    // NOT MODU: sadece notlarla oyna
+    if (userGrid[row][col] !== 0) return; // içinde ana sayı varsa not tutma
+    if (candidates[row][col].has(d)) {
+      candidates[row][col].delete(d);
+    } else {
+      candidates[row][col].add(d);
     }
+  } else {
+    // NORMAL MOD: sayı kesin yazılıyor → hemen kontrol et
+    const cellEl = getCellElement(row, col);
+    let wrong = false;
+
+    if (solution[row][col] === d) {
+      // DOĞRU → hücre kilitlenir
+      userGrid[row][col] = d;
+      candidates[row][col].clear();
+      fixedByUser[row][col] = true;
+      if (cellEl) cellEl.classList.remove("invalid");
+    } else {
+      // YANLIŞ → kırmızıya boya, hata ekle
+      userGrid[row][col] = d;
+      candidates[row][col].clear();
+      wrong = true;
+      if (cellEl) cellEl.classList.add("invalid");
+    }
+
+    // Ne olursa olsun: bu sayı satır/sütun/kutudaki notlardan silinsin
+    updateNotesAfterNumber(row, col, d);
+
+    if (wrong) {
+      mistakeCount++;
+      updateMistakeInfo();
+
+      if (mistakeCount >= MAX_MISTAKES) {
+        alert("5 hata yaptın, oyun baştan başlıyor 💗");
+        mistakeCount = 0;
+        newGame(false);
+        return;
+      } else {
+        alert(`Bu karede ${d} doğru değil. Hata sayın: ${mistakeCount}/${MAX_MISTAKES}`);
+      }
+    }
+  }
+
+  // Aynı sayı vurgusu için seçili değeri güncelle
+  const v = puzzle[row][col] || userGrid[row][col] || null;
+  selectedValue = v;
+
+  hintCells = [];
+  hintMain = null;
+  renderGrid();
+  saveState();
+}
+
 
     function checkSolution() {
       for (let r = 0; r < N; r++) {
@@ -968,7 +1119,7 @@ body.dark .cell.thick-right.thick-bottom {
       const s = elapsedSeconds % 60;
       const mm = String(m).padStart(2, "0");
       const ss = String(s).padStart(2, "0");
-      alert(`Tebrikler! Sudokuyu çözdün 🎉\nSüren: ${mm}:${ss}`);
+      alert(`Tebrikler! Sudokuyu çözdün 🎉\nSüren: ${mm}:${ss}\nHata sayın: ${mistakeCount}`);
       saveState();
     }
 
@@ -977,6 +1128,9 @@ body.dark .cell.thick-right.thick-bottom {
         for (let c = 0; c < N; c++) {
           userGrid[r][c] = solution[r][c];
           candidates[r][c].clear();
+          fixedByUser[r][c] = true;
+          const cellEl = getCellElement(r, c);
+          if (cellEl) cellEl.classList.remove("invalid");
         }
       }
       stopTimer();
@@ -1074,6 +1228,7 @@ body.dark .cell.thick-right.thick-bottom {
             hintCells = [];
             for (let cc = 0; cc < N; cc++) hintCells.push({row: r, col: cc});
             selectedCell = {row, col};
+            selectedValue = solution[row][col];
             renderGrid();
             const extra = notesComment(row, col, d, "row");
             alert(`${r+1}. satıra odaklan.\nSayı ${d} bu satırda sadece seçili kareye sığıyor.` + extra);
@@ -1095,6 +1250,7 @@ body.dark .cell.thick-right.thick-bottom {
             hintCells = [];
             for (let rr = 0; rr < N; rr++) hintCells.push({row: rr, col: c});
             selectedCell = {row, col};
+            selectedValue = solution[row][col];
             renderGrid();
             const extra = notesComment(row, col, d, "col");
             alert(`${c+1}. sütuna bak.\nSayı ${d} bu sütunda sadece seçili hücrede mümkün.` + extra);
@@ -1123,6 +1279,7 @@ body.dark .cell.thick-right.thick-bottom {
                 }
               }
               selectedCell = {row, col};
+              selectedValue = solution[row][col];
               renderGrid();
               const extra = notesComment(row, col, d, "box");
               alert(`Seçili hücrenin bulunduğu 3×3 kutuya bak.\nSayı ${d} bu kutuda sadece bu kareye sığıyor.` + extra);
@@ -1140,6 +1297,7 @@ body.dark .cell.thick-right.thick-bottom {
             hintMain = {row: r, col: c};
             hintCells = [];
             selectedCell = {row: r, col: c};
+            selectedValue = d;
             renderGrid();
             const extra = notesComment(r, c, d, "single");
             alert(`Seçili kareye bak.\nSudoku kurallarına göre burada sadece ${d} mümkün.` + extra);
