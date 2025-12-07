@@ -47,6 +47,23 @@
       font-size: 20px;
     }
 
+    /* Başlık satırı TAM ortaya gelsin */
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .top-row > :first-child,
+    .top-right {
+      width: 70px; /* sol boşluk ve sağdaki buton alanı eşit genişlikte */
+    }
+    .top-right {
+      display: flex;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+
     .title {
       text-align: center;
       font-size: 26px;
@@ -56,24 +73,11 @@
       letter-spacing: 1px;
     }
 
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
     .timer {
       font-size: 13px;
       text-align: center;
       color: #94637b;
       margin-top: 2px;
-    }
-
-    .top-right {
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
 
     .small-toggle {
@@ -88,7 +92,6 @@
       font-weight: 600;
       transition: background 0.2s, color 0.2s, transform 0.1s;
     }
-
     .small-toggle:hover {
       transform: translateY(-1px);
       background: #ffbedf;
@@ -115,21 +118,21 @@
       overflow: hidden;
     }
 
-    /* Melody arkaplanı */
+    /* Melody arkaplanı – eski daha tatlı konum */
     #sudoku-grid::before {
       content: "";
       position: absolute;
       inset: 0;
       background-image: url("mascot.png");  /* dosya adın farklıysa burayı değiştir */
       background-repeat: no-repeat;
-      background-position: center 56%;
-      background-size: 95%;
-      opacity: 0.30;
+      background-position: center 55%;
+      background-size: auto 110%;
+      opacity: 0.28;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* grid glow animasyonu (zorluk değişince) */
+    /* zorluk değişince grid parlasın */
     @keyframes gridGlow {
       0%   { box-shadow: 0 0 0 rgba(255,153,196,0.0); transform: scale(1); }
       40%  { box-shadow: 0 0 18px rgba(255,153,196,0.9); transform: scale(1.01); }
@@ -138,6 +141,8 @@
     #sudoku-grid.diff-flash {
       animation: gridGlow 0.6s ease-out;
     }
+
+    /* HÜCRELER */
 
     .cell {
       position: relative;
@@ -148,26 +153,26 @@
       cursor: pointer;
       transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
       z-index: 1;
-      /* tekli çizgi */
-      box-shadow: inset 0 0 0 1px #f3c9dd;
+      /* İnce çizgi – daha soft pembe */
+      box-shadow: inset 0 0 0 1px #ffd5eb;
     }
 
-    /* 3x3 kalın çizgiler */
+    /* 3x3 kalın çizgiler – daha belirgin */
     .cell.thick-right {
       box-shadow:
-        inset 0 0 0 1px #f3c9dd,
-        inset -2px 0 0 0 #f099c4;
+        inset 0 0 0 1px #ffd5eb,
+        inset -3px 0 0 0 #ff8fc6;
     }
     .cell.thick-bottom {
       box-shadow:
-        inset 0 0 0 1px #f3c9dd,
-        inset 0 -2px 0 0 #f099c4;
+        inset 0 0 0 1px #ffd5eb,
+        inset 0 -3px 0 0 #ff8fc6;
     }
     .cell.thick-right.thick-bottom {
       box-shadow:
-        inset 0 0 0 1px #f3c9dd,
-        inset -2px 0 0 0 #f099c4,
-        inset 0 -2px 0 0 #f099c4;
+        inset 0 0 0 1px #ffd5eb,
+        inset -3px 0 0 0 #ff8fc6,
+        inset 0 -3px 0 0 #ff8fc6;
     }
 
     /* Seçili hücre – light mod */
@@ -196,8 +201,9 @@
       font-weight: 700;
     }
 
+    /* Kullanıcının yazdığı sayılar – daha açık pembe */
     .main-value.user {
-      color: #d94b8a;
+      color: #ff6fb3;
     }
 
     .notes {
@@ -215,6 +221,8 @@
       align-items: center;
       justify-content: center;
     }
+
+    /* BUTONLAR */
 
     .controls {
       margin-top: 14px;
@@ -235,18 +243,15 @@
       transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
       box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
     }
-
     .btn:hover {
       background: #ffbedf;
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
     }
-
     .btn:active {
       transform: translateY(0);
       box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
     }
-
     .btn-primary {
       background: #ff9ac4;
       color: #fff;
@@ -269,7 +274,6 @@
       grid-template-columns: repeat(9, minmax(0, 1fr));
       gap: 6px;
     }
-
     .number-btn {
       border-radius: 12px;
       padding: 8px 0;
@@ -354,6 +358,7 @@
     }
 
     /* DARK MODE --------------------------------------------------- */
+
     body.dark {
       background: radial-gradient(circle at top, #2b1224, #05020a 60%);
       color: #fbeaff;
@@ -411,38 +416,38 @@
       color: #f1c7ec;
     }
 
+    /* Dark mod çizgiler – 3x3 daha belirgin */
     body.dark .cell {
-      box-shadow: inset 0 0 0 1px #ff9ad9;
+      box-shadow: inset 0 0 0 1px #ffb3e3;
     }
     body.dark .cell.thick-right {
       box-shadow:
-        inset 0 0 0 1px #ff9ad9,
-        inset -2px 0 0 0 #ff9ad9;
+        inset 0 0 0 1px #ffb3e3,
+        inset -3px 0 0 0 #ff4fa8;
     }
     body.dark .cell.thick-bottom {
       box-shadow:
-        inset 0 0 0 1px #ff9ad9,
-        inset 0 -2px 0 0 #ff9ad9;
+        inset 0 0 0 1px #ffb3e3,
+        inset 0 -3px 0 0 #ff4fa8;
     }
     body.dark .cell.thick-right.thick-bottom {
       box-shadow:
-        inset 0 0 0 1px #ff9ad9,
-        inset -2px 0 0 0 #ff9ad9,
-        inset 0 -2px 0 0 #ff9ad9;
+        inset 0 0 0 1px #ffb3e3,
+        inset -3px 0 0 0 #ff4fa8,
+        inset 0 -3px 0 0 #ff4fa8;
     }
 
     body.dark .main-value.given {
       color: #ffe6ff;
     }
 
-    /* Dark modda kullanıcı sayıları: koyu pembe + hafif glow */
+    /* Dark modda kullanıcı sayıları – daha açık, glowlu pembe */
     body.dark .main-value.user {
-      color: #d63384;
+      color: #ff8ccd;
       font-weight: 700;
-      text-shadow: 0 0 4px rgba(214, 51, 132, 0.4);
+      text-shadow: 0 0 5px rgba(255, 140, 205, 0.55);
     }
 
-    /* Dark mod seçili kare */
     body.dark .cell.selected {
       background: rgba(255, 80, 150, 0.45);
       box-shadow:
