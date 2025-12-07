@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>ZEYDOKU 🌸</title>
 
-  <!-- Mobil uyum + PWA hissi -->
+  <!-- Mobil uyum -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -29,21 +29,22 @@
     .app {
       background: #ffffffdd;
       border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      padding: 30px 28px 20px;
-      max-width: 520px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+      padding: 20px 18px 18px;
       width: 100%;
+      max-width: 480px;
+      margin: 10px;
       position: relative;
       overflow: hidden;
-      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
 
     .app::before {
       content: "🌸";
       position: absolute;
-      top: 8px;
-      left: 16px;
-      font-size: 22px;
+      top: 6px;
+      left: 12px;
+      font-size: 20px;
     }
 
     .title {
@@ -55,28 +56,24 @@
       letter-spacing: 1px;
     }
 
-    .top-bar {
+    .top-row {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .timer {
       font-size: 13px;
+      text-align: center;
       color: #94637b;
+      margin-top: 2px;
     }
 
-    /* Üstteki buton (Dark) */
-    .top-buttons {
-      position: absolute;
-      top: 8px;
-      right: 14px;
+    .top-right {
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 4px;
-      align-items: flex-end;
     }
 
     .small-toggle {
@@ -97,87 +94,100 @@
       background: #ffbedf;
     }
 
-    /* Sudoku konteyneri */
+    /* Sudoku container */
     #sudoku-container {
       display: flex;
       justify-content: center;
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
-    /* Melody’li tahta */
+    /* Grid: responsive kare */
     #sudoku-grid {
       position: relative;
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 1 / 1;      /* her zaman kare */
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
+      place-items: stretch;
       overflow: hidden;
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
     }
 
+    /* Melody arkaplanı */
     #sudoku-grid::before {
       content: "";
       position: absolute;
       inset: 0;
-      background-image: url("mascot.png");   /* dosya: mascot.png */
+      background-image: url("mascot.png");  /* dosya adın farklıysa burayı değiştir */
       background-repeat: no-repeat;
-      background-position: center 55%;
-      background-size: auto 110%;
-      opacity: 0.28;
+      background-position: center 56%;
+      background-size: 95%;
+      opacity: 0.30;
       pointer-events: none;
       z-index: 0;
-      transition: opacity 0.3s ease;
     }
 
-    /* Zorluk seçince parlayan efekt */
+    /* grid glow animasyonu (zorluk değişince) */
     @keyframes gridGlow {
-      0%   { box-shadow: 0 0 0 rgba(255,153,196,0.0); transform: scale(1);   }
+      0%   { box-shadow: 0 0 0 rgba(255,153,196,0.0); transform: scale(1); }
       40%  { box-shadow: 0 0 18px rgba(255,153,196,0.9); transform: scale(1.01); }
-      100% { box-shadow: 0 0 0 rgba(255,153,196,0.0); transform: scale(1);   }
+      100% { box-shadow: 0 0 0 rgba(255,153,196,0.0); transform: scale(1); }
     }
     #sudoku-grid.diff-flash {
       animation: gridGlow 0.6s ease-out;
     }
 
     .cell {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      border: 1px solid #f3c9dd;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: transparent;
       cursor: pointer;
       transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
       z-index: 1;
+      /* tekli çizgi */
+      box-shadow: inset 0 0 0 1px #f3c9dd;
     }
 
-    /* Light mode seçili hücre (pembe) */
+    /* 3x3 kalın çizgiler */
+    .cell.thick-right {
+      box-shadow:
+        inset 0 0 0 1px #f3c9dd,
+        inset -2px 0 0 0 #f099c4;
+    }
+    .cell.thick-bottom {
+      box-shadow:
+        inset 0 0 0 1px #f3c9dd,
+        inset 0 -2px 0 0 #f099c4;
+    }
+    .cell.thick-right.thick-bottom {
+      box-shadow:
+        inset 0 0 0 1px #f3c9dd,
+        inset -2px 0 0 0 #f099c4,
+        inset 0 -2px 0 0 #f099c4;
+    }
+
+    /* Seçili hücre – light mod */
     body:not(.dark) .cell.selected {
       background: rgba(255, 182, 222, 0.45);
-      border-color: #ff8ac7 !important;
-      box-shadow: 0 0 8px rgba(255, 140, 200, 0.6);
-      transform: scale(1.05);
+      box-shadow: inset 0 0 0 1px #ff8ac7, 0 0 8px rgba(255, 140, 200, 0.6);
+      transform: scale(1.02);
     }
 
     .cell.hint-area {
       background: #fff7d6;
     }
-
     .cell.hint-main {
       background: #ffd9df;
       box-shadow: inset 0 0 0 2px #ff7f7f;
     }
 
-    .cell.thick-right {
-      border-right: 2px solid #f099c4;
-    }
-
-    .cell.thick-bottom {
-      border-bottom: 2px solid #f099c4;
-    }
-
     .main-value {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
+      position: relative;
+      font-size: clamp(18px, 2.8vw, 22px);
       font-weight: 600;
     }
 
@@ -186,7 +196,6 @@
       font-weight: 700;
     }
 
-    /* Kullanıcının yazdığı sayılar: pembe */
     .main-value.user {
       color: #d94b8a;
     }
@@ -197,11 +206,10 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      font-size: 9px;
+      font-size: 8px;
       color: #999;
       pointer-events: none;
     }
-
     .note {
       display: flex;
       align-items: center;
@@ -209,7 +217,7 @@
     }
 
     .controls {
-      margin-top: 16px;
+      margin-top: 14px;
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
@@ -243,7 +251,6 @@
       background: #ff9ac4;
       color: #fff;
     }
-
     .btn-primary:hover {
       background: #ff7fb4;
     }
@@ -252,7 +259,6 @@
       background: #c1f0ff;
       color: #12526a;
     }
-
     .btn-note-on:hover {
       background: #a3e8ff;
     }
@@ -275,7 +281,6 @@
       cursor: pointer;
       transition: background 0.15s, transform 0.1s;
     }
-
     .number-btn:hover {
       background: #ffcfe8;
       transform: translateY(-1px);
@@ -288,13 +293,11 @@
       gap: 6px;
       flex-wrap: wrap;
     }
-
     .difficulty-label {
       font-size: 13px;
       color: #79435f;
       margin-right: 4px;
     }
-
     .diff-btn {
       border: none;
       border-radius: 999px;
@@ -305,12 +308,10 @@
       color: #8a3b6a;
       transition: background 0.15s, transform 0.1s;
     }
-
     .diff-btn.active {
       background: #ff9ac4;
       color: white;
     }
-
     .diff-btn:hover {
       background: #ffd0ea;
       transform: translateY(-1px);
@@ -323,7 +324,7 @@
       color: #94637b;
     }
 
-    /* Kalp atan loading overlay */
+    /* Loading kalp */
     #loading-overlay {
       position: absolute;
       inset: 0;
@@ -336,17 +337,14 @@
       transition: opacity 0.25s ease;
       z-index: 5;
     }
-
     #loading-overlay.visible {
       opacity: 1;
       pointer-events: auto;
     }
-
     .heart-loader {
-      font-size: 48px;
+      font-size: 44px;
       animation: heartbeat 0.9s infinite;
     }
-
     @keyframes heartbeat {
       0%   { transform: scale(1); }
       25%  { transform: scale(1.25); }
@@ -360,21 +358,17 @@
       background: radial-gradient(circle at top, #2b1224, #05020a 60%);
       color: #fbeaff;
     }
-
     body.dark .app {
       background: #1c1020f0;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
     }
-
     body.dark .title {
       color: #ff9ad9;
     }
-
     body.dark .small-toggle {
       background: #3b2438;
       color: #ffd6f3;
     }
-
     body.dark .small-toggle:hover {
       background: #4a2d46;
     }
@@ -383,16 +377,13 @@
       background: #3b2438;
       color: #ffd6f3;
     }
-
     body.dark .btn:hover {
       background: #4a2d46;
     }
-
     body.dark .btn-primary {
       background: #ff5fa8;
       color: #fff;
     }
-
     body.dark .btn-primary:hover {
       background: #ff3f97;
     }
@@ -401,7 +392,6 @@
       background: #3b2438;
       color: #ffd6f3;
     }
-
     body.dark .number-btn:hover {
       background: #4a2d46;
     }
@@ -410,7 +400,6 @@
       background: #3b2438;
       color: #ffd6f3;
     }
-
     body.dark .diff-btn.active {
       background: #ff5fa8;
       color: #fff;
@@ -423,65 +412,81 @@
     }
 
     body.dark .cell {
-      border-color: #ff9ad9;
+      box-shadow: inset 0 0 0 1px #ff9ad9;
+    }
+    body.dark .cell.thick-right {
+      box-shadow:
+        inset 0 0 0 1px #ff9ad9,
+        inset -2px 0 0 0 #ff9ad9;
+    }
+    body.dark .cell.thick-bottom {
+      box-shadow:
+        inset 0 0 0 1px #ff9ad9,
+        inset 0 -2px 0 0 #ff9ad9;
+    }
+    body.dark .cell.thick-right.thick-bottom {
+      box-shadow:
+        inset 0 0 0 1px #ff9ad9,
+        inset -2px 0 0 0 #ff9ad9,
+        inset 0 -2px 0 0 #ff9ad9;
     }
 
     body.dark .main-value.given {
       color: #ffe6ff;
     }
 
+    /* Dark modda kullanıcı sayıları: koyu pembe + hafif glow */
     body.dark .main-value.user {
-      color: #ff6fb3;
+      color: #d63384;
+      font-weight: 700;
+      text-shadow: 0 0 4px rgba(214, 51, 132, 0.4);
     }
 
-    /* Dark modda seçili hücre daha koyu pembe */
+    /* Dark mod seçili kare */
     body.dark .cell.selected {
-      background: rgba(255, 80, 150, 0.48);
-      box-shadow: 0 0 18px rgba(255, 110, 185, 0.85);
-      border-color: #ff5ab6 !important;
-      transform: scale(1.05);
+      background: rgba(255, 80, 150, 0.45);
+      box-shadow:
+        inset 0 0 0 1px #ff5ab6,
+        0 0 18px rgba(255, 110, 185, 0.85);
+      transform: scale(1.02);
     }
 
     body.dark #sudoku-grid::before {
-      opacity: 0.35;
+      opacity: 0.36;
     }
-
     body.dark #loading-overlay {
       background: rgba(10, 3, 18, 0.85);
     }
 
-    /* Mobil ayarlar */
     @media (max-width: 600px) {
       .app {
-        transform: scale(0.95);
-        padding: 22px 16px 16px;
+        padding: 18px 14px 16px;
+        border-radius: 20px;
       }
       .btn {
-        padding: 10px 12px;
-        font-size: 14px;
+        padding: 9px 10px;
+        font-size: 13px;
       }
       .number-btn {
         padding: 10px 0;
-        font-size: 16px;
+        font-size: 15px;
       }
-      .small-toggle {
-        padding: 4px 8px;
-        font-size: 11px;
+      .title {
+        font-size: 24px;
       }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="title">💗ZEYDOKU💗</div>
-
-    <div class="top-buttons">
-      <button id="theme-toggle" class="small-toggle">🌙 Dark</button>
+    <div class="top-row">
+      <div></div>
+      <div class="title">💗ZEYDOKU💗</div>
+      <div class="top-right">
+        <button id="theme-toggle" class="small-toggle">🌙 Dark</button>
+      </div>
     </div>
-
-    <div class="top-bar">
-      <div id="timer" class="timer">⏱️ 00:00</div>
-    </div>
+    <div class="timer" id="timer">⏱️ 00:00</div>
 
     <div id="sudoku-container">
       <div id="sudoku-grid"></div>
@@ -495,9 +500,7 @@
 
       <button id="note-mode" class="btn">Not Modu: Kapalı</button>
       <button id="clear-cell" class="btn">Sil</button>
-      <div class="hint-info" style="grid-column: span 2;">
-        <!-- burayı boş bırak dedin -->
-      </div>
+      <div class="hint-info" style="grid-column: span 2;"></div>
     </div>
 
     <div class="numbers-row" id="numbers-row"></div>
@@ -510,21 +513,14 @@
       <button class="diff-btn" data-diff="cok_zor">Çok Zor</button>
     </div>
 
-    <!-- Kalp atan loading -->
     <div id="loading-overlay">
       <div class="heart-loader">💗</div>
     </div>
   </div>
 
   <script>
-
     const N = 9;
-const BASE_CELL_SIZE = 50;
-let CELL_SIZE = BASE_CELL_SIZE;   // artık dinamik
-const MARGIN = 10;
-
-
-    const STORAGE_KEY = "zeydoku_state_v1";
+    const STORAGE_KEY = "zeydoku_state_v2";
 
     let puzzle = null;
     let solution = null;
@@ -743,9 +739,7 @@ const MARGIN = 10;
 
         document.querySelectorAll(".diff-btn").forEach(btn => {
           btn.classList.remove("active");
-          if (btn.dataset.diff === difficulty) {
-            btn.classList.add("active");
-          }
+          if (btn.dataset.diff === difficulty) btn.classList.add("active");
         });
 
         selectedCell = null;
@@ -755,35 +749,23 @@ const MARGIN = 10;
         updateTimerDisplay();
         startTimer();
       } catch (e) {
-        console.warn("State okunamadı, yeni oyun başlatılıyor:", e);
+        console.warn("State okunamadı, yeni oyun:", e);
         newGame(true);
       }
     }
 
-document.addEventListener("DOMContentLoaded", () => {
-  gridEl = document.getElementById("sudoku-grid");
-  loadingOverlay = document.getElementById("loading-overlay");
-  themeToggle = document.getElementById("theme-toggle");
-  timerEl = document.getElementById("timer");
+    document.addEventListener("DOMContentLoaded", () => {
+      gridEl = document.getElementById("sudoku-grid");
+      loadingOverlay = document.getElementById("loading-overlay");
+      themeToggle = document.getElementById("theme-toggle");
+      timerEl = document.getElementById("timer");
 
-  // 📱 Ekrana göre kare boyutunu ayarla
-  const appEl = document.querySelector(".app");
-  const appWidth = appEl.clientWidth;              // kartın gerçek genişliği
-  const maxGridWidth = appWidth - 2 * MARGIN - 4;  // kenarlardan biraz boşluk
-  if (maxGridWidth < BASE_CELL_SIZE * N) {
-    CELL_SIZE = Math.floor(maxGridWidth / N);
-  }
-
-  gridEl.style.width = (CELL_SIZE * N + 2 * MARGIN) + "px";
-  gridEl.style.height = (CELL_SIZE * N + 2 * MARGIN) + "px";
-
-
+      // Hücreleri oluştur
+      gridEl.innerHTML = "";
       for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
           const cell = document.createElement("div");
           cell.className = "cell";
-          cell.style.left = (MARGIN + c * CELL_SIZE) + "px";
-          cell.style.top = (MARGIN + r * CELL_SIZE) + "px";
           cell.dataset.row = r;
           cell.dataset.col = c;
 
@@ -796,6 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const numsRow = document.getElementById("numbers-row");
+      numsRow.innerHTML = "";
       for (let i = 1; i <= 9; i++) {
         const btn = document.createElement("button");
         btn.textContent = i;
@@ -855,7 +838,10 @@ document.addEventListener("DOMContentLoaded", () => {
         puzzle = p;
         solution = s;
         userGrid = puzzle.map(row => row.slice());
-        candidates = Array.from({length: N}, () => Array.from({length: N}, () => new Set()));
+        candidates = Array.from(
+          {length: N},
+          () => Array.from({length: N}, () => new Set())
+        );
         selectedCell = null;
         hintCells = [];
         hintMain = null;
@@ -990,7 +976,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function computeLogicCandidates() {
       const grid = userGrid.map(row => row.slice());
-      const cands = Array.from({length: N}, () => Array.from({length: N}, () => new Set()));
+      const cands = Array.from(
+        {length: N},
+        () => Array.from({length: N}, () => new Set())
+      );
       for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
           if (grid[r][c] === 0) {
@@ -1040,7 +1029,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const bc = Math.floor(c / 3) * 3;
         const others = [];
         for (let rr = br; rr < br + 3; rr++) {
-          for (let cc = bc; cc < br + 3; cc++) {
+          for (let cc = bc; cc < bc + 3; cc++) {
             if (candidates[rr][cc].has(d) && (rr !== r || cc !== c)) {
               others.push([rr, cc]);
             }
