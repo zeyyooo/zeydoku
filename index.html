@@ -72,8 +72,14 @@
     }
 
     #sudoku-grid {
-      position: relative;
-    }
+  position: relative;
+  background-image: url("mascot.jpg");
+  background-size: 330px;       /* görüntü boyutu - büyült küçült */
+  background-repeat: no-repeat; 
+  background-position: center center;
+background-color: rgba(255, 240, 250, 0.7);
+  opacity: 0.18;                /* Görselin saydamlığı (0.10–0.25 arası tatlı oluyor) */
+}
 
     .cell {
       position: absolute;
@@ -304,7 +310,7 @@
     </div>
 
     <div class="hint-info">
-      İpucu: Önce satır/sütun/kutu mantığı, sonra tek adaylı kareler. Notlarınla da sohbet eder 💬
+     
     </div>
   </div>
 
