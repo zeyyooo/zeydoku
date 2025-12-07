@@ -268,13 +268,29 @@ body.dark .cell.hint-main {
     }
 
     /* Not modu AÇIKKEN buton rengi */
+/* NOT MODU AÇIKKEN – LIGHT MODE (daha koyu) */
 .btn-note-on {
-  background: #f4c8ff;      /* lila-pembe */
-  color: #5a245f;           /* koyu mor yazı */
+  background: #e7549a !important;   /* canlı koyu pembe */
+  color: #ffffff !important;        /* beyaz yazı */
+  box-shadow: 0 0 10px rgba(231, 84, 154, 0.5) !important;
 }
+
+/* NOT MODU AÇIKKEN – DARK MODE (daha koyu & net) */
+body.dark .btn-note-on {
+  background: #b92e78 !important;   /* derin koyu pembe */
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(255, 120, 190, 0.5) !important;
+}
+
+/* Hover efektleri */
 .btn-note-on:hover {
-  background: #f0b0ff;      /* hover'da bir tık koyu */
+  background: #d63b87 !important;
 }
+
+body.dark .btn-note-on:hover {
+  background: #a82368 !important;
+}
+
 
 
     .numbers-row {
@@ -552,6 +568,7 @@ body.dark .cell.hint-main {
       <button class="diff-btn active" data-diff="orta">Orta</button>
       <button class="diff-btn" data-diff="zor">Zor</button>
       <button class="diff-btn" data-diff="cok_zor">Çok Zor</button>
+
     </div>
 
     <div id="loading-overlay">
@@ -924,36 +941,48 @@ document.getElementById("show-solution").addEventListener("click", () => {
     });
 
     function newGame(isInitial) {
-      showLoading();
-      stopTimer();
-      elapsedSeconds = 0;
-      mistakeCount = 0;
-      updateTimerDisplay();
-      updateMistakeInfo();
+  showLoading();
+  stopTimer();
+  elapsedSeconds = 0;
+  mistakeCount = 0;
+  updateTimerDisplay();
+  updateMistakeInfo();
 
-      setTimeout(() => {
-        const { puzzle: p, solution: s } = generatePuzzle(difficulty);
-        puzzle = p;
-        solution = s;
-        userGrid = puzzle.map(row => row.slice());
-        candidates = Array.from(
-          {length: N},
-          () => Array.from({length: N}, () => new Set())
-        );
-        fixedByUser = Array.from(
-          {length: N},
-          () => Array(N).fill(false)
-        );
-        selectedCell = null;
-        selectedValue = null;
-        hintCells = [];
-        hintMain = null;
-        renderGrid();
-        hideLoading();
-        startTimer();
-        saveState();
-      }, isInitial ? 0 : 80);
-    }
+  // ESKİ OYUNDAN KALAN TÜM EFEKTLERİ TEMİZLE
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.classList.remove(
+      "invalid",
+      "same-number",
+      "hint-area",
+      "hint-main",
+      "selected"
+    );
+  });
+
+  setTimeout(() => {
+    const { puzzle: p, solution: s } = generatePuzzle(difficulty);
+    puzzle = p;
+    solution = s;
+    userGrid = puzzle.map(row => row.slice());
+    candidates = Array.from(
+      {length: N},
+      () => Array.from({length: N}, () => new Set())
+    );
+    fixedByUser = Array.from(
+      {length: N},
+      () => Array(N).fill(false)
+    );
+    selectedCell = null;
+    selectedValue = null;
+    hintCells = [];
+    hintMain = null;
+    renderGrid();
+    hideLoading();
+    startTimer();
+    saveState();
+  }, isInitial ? 0 : 80);
+}
+
 
     function getCellElement(row, col) {
       return document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
@@ -1309,6 +1338,7 @@ document.getElementById("show-solution").addEventListener("click", () => {
 
       alert("Basit mantıkla bulunabilecek yeni bir hamle kalmadı.\nBelki daha ileri teknikler gerekir 🙂");
     }
+
   </script>
 </body>
 </html>
