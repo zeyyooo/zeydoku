@@ -49,19 +49,21 @@
     /* Mascot (My Melody) */
     .mascot {
   position: absolute;
-  right: 10px;
-  top: 80px;    /* başlığın biraz altında */
-  width: 120px;
-  opacity: 0.98;
+  right: -140px;     /* SAĞA DIŞARI TAŞIYORUZ */
+  top: 120px;        /* Sudoku’nun ortası hizası */
+  width: 180px;      /* Daha büyük görünmesi için */
+  opacity: 0.95;
   pointer-events: none;
+  z-index: -1;       /* Kutunun ARKASINA alır, taşma görünmez */
 }
 @media (max-width: 600px) {
   .mascot {
-    width: 90px;
-    right: 0;
-    top: 90px;
+    right: -90px;
+    top: 180px;
+    width: 130px;
   }
 }
+
 
     #sudoku-container {
       display: flex;
